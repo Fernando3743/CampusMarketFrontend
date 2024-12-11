@@ -1,15 +1,26 @@
 import { useState } from "react";
 import Link from "next/link";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function SignUpForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const handleCaptchaChange = (token) => {
+    setCaptchaToken(token);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA");
+      return;
+    }
 
     // Simulate user registration logic (replace with API call)
     if (name && email && password) {
@@ -27,7 +38,7 @@ export default function SignUpForm() {
   };
 
   return (
-    <div style={{ justifyContent: "center", display: "flex", alignItems: "center", height: "70vh" }}>
+    <div style={{ justifyContent: "center", display: "flex", alignItems: "center", height: "100vh" }}>
       <div style={{ width: "50%" }}>
 
         <div style={{ padding: 20 }} className="bg-white p-6 rounded-lg shadow-md border border-gray-300">
@@ -92,6 +103,13 @@ export default function SignUpForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div>
+              <ReCAPTCHA
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                onChange={handleCaptchaChange}
               />
             </div>
 
